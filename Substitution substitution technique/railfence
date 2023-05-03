@@ -1,0 +1,145 @@
+RAILFENCE Substitution
+
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+string rail_fence_encrypt(string plaintext, int key) {
+    vector<string> rows(key);
+    int current_row = 0;
+    bool down = true;
+
+    for(char c : plaintext) {
+        rows[current_row] += c;
+        if(current_row == key - 1) {
+            down = false;
+        } else if(current_row == 0) {
+            down = true;
+        }
+        current_row += down ? 1 : -1;
+    }
+
+    string ciphertext = "";
+    for(string row : rows) {
+        ciphertext += row;
+    }
+    return ciphertext;
+}
+
+string rail_fence_decrypt(string ciphertext, int key) {
+    vector<string> rows(key);
+    int index = 0;
+    bool down = true;
+
+    for(char c : ciphertext) {
+        rows[index] += '*'; // use '*' as a placeholder for now
+        if(index == key - 1) {
+            down = false;
+        } else if(index == 0) {
+            down = true;
+        }
+        index += down ? 1 : -1;
+    }
+
+    int i = 0;
+    int current_row = 0; // initialize current_row
+    down = true;
+    vector<int> row_lengths(key, 0);
+
+    for(int i = 0; i < ciphertext.length(); i++) {
+        row_lengths[current_row]++;
+        if(current_row == key - 1) {
+            down = false;
+        } else if(current_row == 0) {
+            down = true;
+        }
+        current_row += down ? 1 : -1;
+    }
+
+    index = 0; // reassign index variable
+    for(int row = 0; row < key; row++) {
+        for(int col = 0; col < row_lengths[row]; col++) {
+            rows[row][col] = ciphertext[index];
+            index++;
+        }
+    }
+
+    string plaintext = "";
+    current_row = 0; // reassign current_row variable
+    down = true;
+
+    for(char c : ciphertext) {
+        plaintext += rows[current_row][0];
+        rows[current_row].erase(0, 1);
+        if(current_row == key - 1) {
+            down = false;
+        } else if(current_row == 0) {
+            down = true;
+        }
+        current_row += down ? 1 : -1;
+    }
+
+    return plaintext;
+}
+
+int main() {
+    string plaintext;
+    int key;
+    cout << "Enter plaintext: ";
+    getline(cin, plaintext);
+    cout << "Enter key: ";
+    cin >> key;
+
+    string ciphertext = rail_fence_encrypt(plaintext, key);
+    cout << "Encrypted message: " << ciphertext << endl;
+
+    string decryptedtext = rail_fence_decrypt(ciphertext, key);
+    cout << "Decrypted message: " << decryptedtext << endl;
+
+    return 0;
+}
+
+
+*Rail Fence cipher encryption:
+
+Initialize an empty vector of strings rows.
+Initialize an integer variable current_row to 0, and a boolean variable down to true.
+For each character c in the plaintext string:
+a. Append c to the string in the current_row index of the rows vector.
+b. If current_row is equal to key - 1, set down to false. If current_row is equal to 0, set down to true.
+c. Increment current_row by 1 if down is true, or by -1 if down is false.
+Concatenate all the strings in the rows vector to form the ciphertext string.
+Return the ciphertext string.
+Rail Fence cipher decryption:
+
+Initialize an empty vector of strings rows.
+Initialize an integer variable index to 0, and a boolean variable down to true.
+For each character c in the ciphertext string:
+a. Append the placeholder character '*' to the string in the index index of the rows vector.
+b. If index is equal to key - 1, set down to false. If index is equal to 0, set down to true.
+c. Increment index by 1 if down is true, or by -1 if down is false.
+Initialize an integer variable i to 0, another integer variable current_row to 0, and down to true. Initialize a vector of integers row_lengths of length key with all values set to 0.
+For each character c in the ciphertext string:
+a. Increment the value in the current_row index of the row_lengths vector by 1.
+b. If current_row is equal to key - 1, set down to false. If current_row is equal to 0, set down to true.
+c. Increment current_row by 1 if down is true, or by -1 if down is false.
+Set index back to 0.
+For each row in the rows vector, and for each column in that row up to the length of the row:
+a. Set the character in the row row and col column of the rows vector to the index character of the ciphertext string.
+b. Increment index by 1.
+Initialize an empty string plaintext, and set current_row back to 0, and down to true.
+For each character c in the ciphertext string:
+a. Append the first character of the string in the current_row index of the rows vector to the plaintext string.
+b. Remove the first character of the string in the current_row index of the rows vector.
+c. If current_row is equal to key - 1, set down to false. If current_row is equal to 0, set down to true.
+d. Increment current_row by 1 if down is true, or by -1 if down is false.
+Return the plaintext string.
+*
+
+
+
+
+
+
